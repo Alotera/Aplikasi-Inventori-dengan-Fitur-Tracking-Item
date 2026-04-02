@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Dashboard')
-@section('page-title', 'Dashboard')
-@section('page-description', 'Overview of your inventory management system')
+@section('title', __('admin.dashboard.title'))
+@section('page-title', __('admin.dashboard.page_title'))
+@section('page-description', __('admin.dashboard.page_desc'))
 
 @section('content')
 <div class="space-y-6">
@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('admin.dashboard.total_users') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['total_users'] }}</dd>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Active Users</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('admin.dashboard.active_users') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['active_users'] }}</dd>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Total Items</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('admin.dashboard.total_items') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['total_items'] }}</dd>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Low Stock Items</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('admin.dashboard.low_stock') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['low_stock_items'] }}</dd>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Pending WI</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('admin.dashboard.pending_wi') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['pending_wi'] }}</dd>
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Overdue WI</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('admin.dashboard.overdue_wi') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['overdue_wi'] }}</dd>
                     </div>
                 </div>
@@ -108,23 +108,23 @@
     <!-- Quick Actions -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('admin.dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                     <i class="fas fa-user-plus mr-2"></i>
-                    Add New User
+                    {{ __('admin.dashboard.add_user') }}
                 </a>
                 <a href="{{ route('admin.items.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                     <i class="fas fa-plus mr-2"></i>
-                    Add New Item
+                    {{ __('admin.dashboard.add_item') }}
                 </a>
                 <a href="{{ route('admin.work-instructions.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
                     <i class="fas fa-clipboard-list mr-2"></i>
-                    Create Work Instruction
+                    {{ __('admin.dashboard.create_wi') }}
                 </a>
                 <a href="{{ route('admin.reports.stock') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <i class="fas fa-chart-line mr-2"></i>
-                    Stock Report
+                    {{ __('nav.stock_report') }}
                 </a>
             </div>
         </div>
@@ -133,16 +133,16 @@
     <!-- Recent Work Instructions -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Work Instructions</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('admin.dashboard.recent_wi') }}</h3>
             <div class="overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WI Number</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.dashboard.wi_number') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.type') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.dashboard.assigned_to') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.dashboard.deadline') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.status') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -176,7 +176,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                                No work instructions found
+                                {{ __('admin.dashboard.no_wi') }}
                             </td>
                         </tr>
                         @endforelse
@@ -185,7 +185,7 @@
             </div>
             <div class="mt-4">
                 <a href="{{ route('admin.work-instructions.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    View all work instructions →
+                    {{ __('admin.dashboard.view_all_wi') }} →
                 </a>
             </div>
         </div>

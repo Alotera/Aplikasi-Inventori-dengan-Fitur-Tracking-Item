@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Stock Report')
-@section('page-title', 'Stock Movement Report')
-@section('page-description', 'Laporan pergerakan stock barang dari warehouse staff')
+@section('title', __('reports.stock.title'))
+@section('page-title', __('reports.stock.page_title'))
+@section('page-description', __('reports.stock.page_desc'))
 
 @section('content')
 <div class="space-y-6">
@@ -16,7 +16,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Movements</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.total_movements') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['total_movements']) }}</dd>
                         </dl>
                     </div>
@@ -32,9 +32,9 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Stock IN</dt>
-                            <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['stock_in_count']) }} movements</dd>
-                            <dd class="text-sm text-gray-500">{{ number_format($analytics['total_stock_in']) }} units</dd>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.stock_in') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['stock_in_count']) }} {{ __('reports.stock.movements') }}</dd>
+                            <dd class="text-sm text-gray-500">{{ number_format($analytics['total_stock_in']) }} {{ __('reports.stock.units') }}</dd>
                         </dl>
                     </div>
                 </div>
@@ -49,9 +49,9 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Stock OUT</dt>
-                            <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['stock_out_count']) }} movements</dd>
-                            <dd class="text-sm text-gray-500">{{ number_format($analytics['total_stock_out']) }} units</dd>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.stock_out') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['stock_out_count']) }} {{ __('reports.stock.movements') }}</dd>
+                            <dd class="text-sm text-gray-500">{{ number_format($analytics['total_stock_out']) }} {{ __('reports.stock.units') }}</dd>
                         </dl>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Checking Result</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.checking_result') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['checking_count']) }}</dd>
                         </dl>
                     </div>
@@ -85,15 +85,13 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">WI Consumption</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.wi_consumption') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['wi_consumption_count']) }}</dd>
                         </dl>
                     </div>
                 </div>
             </div>
         </div>
-
-        
 
         <div class="bg-white overflow-hidden shadow rounded-lg">
             <div class="p-5">
@@ -103,7 +101,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Active Staff</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.active_staff') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ $warehouseStaff->count() }}</dd>
                         </dl>
                     </div>
@@ -119,7 +117,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Units IN</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ __('reports.stock.total_units_in') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ number_format($analytics['total_stock_in']) }}</dd>
                         </dl>
                     </div>
@@ -135,14 +133,14 @@
                 <div>
                     <h3 class="text-lg font-semibold text-gray-800">
                         <i class="fas fa-filter mr-2 text-blue-500"></i>
-                        Filter Stock Movements
+                        {{ __('reports.stock.filter_heading') }}
                     </h3>
-                    <p class="text-sm text-gray-600 mt-1">Gunakan filter di bawah untuk menyaring data stock movement</p>
+                    <p class="text-sm text-gray-600 mt-1">{{ __('reports.stock.filter_hint') }}</p>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         <i class="fas fa-chart-bar mr-1"></i>
-                        Analytics
+                        {{ __('reports.stock.analytics_badge') }}
                     </span>
                 </div>
             </div>
@@ -151,13 +149,13 @@
             <div class="bg-gray-50 rounded-lg p-4">
                 <h4 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
                     <i class="fas fa-search mr-2 text-blue-500"></i>
-                    Filter Data
+                    {{ __('reports.stock.filter_data') }}
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
-                        <label for="item_id" class="block text-sm font-medium text-gray-700 mb-2">Item</label>
+                        <label for="item_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('nav.items') }}</label>
                         <select id="item_id" name="item_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="">Semua Item</option>
+                            <option value="">{{ __('reports.stock.all_items') }}</option>
                             @foreach($items as $item)
                                 <option value="{{ $item->id }}" {{ request('item_id') == $item->id ? 'selected' : '' }}>
                                     {{ $item->name }} ({{ $item->item_code }})
@@ -167,9 +165,9 @@
                     </div>
                     
                     <div>
-                        <label for="movement_type" class="block text-sm font-medium text-gray-700 mb-2">Movement Type</label>
+                        <label for="movement_type" class="block text-sm font-medium text-gray-700 mb-2">{{ __('reports.stock.movement_type') }}</label>
                         <select id="movement_type" name="movement_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="">Semua Tipe</option>
+                            <option value="">{{ __('reports.stock.all_types') }}</option>
                             @foreach($movementTypes as $type => $label)
                                 <option value="{{ $type }}" {{ request('movement_type') == $type ? 'selected' : '' }}>
                                     {{ $label }}
@@ -179,9 +177,9 @@
                     </div>
 
                     <div>
-                        <label for="user_id" class="block text-sm font-medium text-gray-700 mb-2">Warehouse Staff</label>
+                        <label for="user_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('reports.stock.warehouse_staff') }}</label>
                         <select id="user_id" name="user_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="">Semua Staff</option>
+                            <option value="">{{ __('reports.stock.all_staff') }}</option>
                             @foreach($warehouseStaff as $staff)
                                 <option value="{{ $staff->id }}" {{ request('user_id') == $staff->id ? 'selected' : '' }}>
                                     {{ $staff->name }}
@@ -191,12 +189,12 @@
                     </div>
                     
                     <div>
-                        <label for="date_from" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
+                        <label for="date_from" class="block text-sm font-medium text-gray-700 mb-2">{{ __('reports.stock.date_from') }}</label>
                         <input type="date" id="date_from" name="date_from" value="{{ request('date_from') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                     
                     <div>
-                        <label for="date_to" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Akhir</label>
+                        <label for="date_to" class="block text-sm font-medium text-gray-700 mb-2">{{ __('reports.stock.date_to') }}</label>
                         <input type="date" id="date_to" name="date_to" value="{{ request('date_to') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                 </div>
@@ -205,20 +203,20 @@
             <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-info-circle text-blue-500"></i>
-                    <span class="text-sm text-gray-600">Gunakan filter untuk menyaring data stock movement</span>
+                    <span class="text-sm text-gray-600">{{ __('reports.stock.filter_hint') }}</span>
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('admin.reports.stock') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                         <i class="fas fa-refresh mr-2"></i>
-                        Reset
+                        {{ __('common.reset') }}
                     </a>
                     <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="fas fa-search mr-2"></i>
-                        Filter
+                        {{ __('common.filter') }}
                     </button>
                     <a href="{{ route('admin.reports.stock-export', request()->query()) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         <i class="fas fa-download mr-2"></i>
-                        Export PDF
+                        {{ __('reports.stock.export_pdf') }}
                     </a>
                 </div>
             </div>
@@ -232,14 +230,14 @@
                 <div>
                     <h3 class="text-lg font-semibold text-gray-800">
                         <i class="fas fa-history mr-2 text-indigo-500"></i>
-                        Stock Movement History
+                        {{ __('reports.stock.history_title') }}
                     </h3>
-                    <p class="text-sm text-gray-600 mt-1">Riwayat lengkap pergerakan stock barang</p>
+                    <p class="text-sm text-gray-600 mt-1">{{ __('reports.stock.history_sub') }}</p>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                         <i class="fas fa-table mr-1"></i>
-                        {{ $movements->count() }} records
+                        {{ $movements->count() }} {{ __('reports.stock.records') }}
                     </span>
                 </div>
             </div>
@@ -250,18 +248,19 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Before</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">After</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_item') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_type') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_qty') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_before') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_after') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_staff') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_date') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('reports.stock.table_notes') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($movements as $movement)
+                        @php($mtKey = $movement->movement_type)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $movement->item->name }}</div>
@@ -284,7 +283,7 @@
                                         @elseif($movement->movement_type === 'WI_CONSUMPTION') fa-clipboard-list
                                         @else fa-question-circle
                                         @endif mr-1"></i>
-                                    {{ $movement->movement_type }}
+                                    {{ __('reports.movement.'.$mtKey) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -318,14 +317,13 @@
                     </tbody>
                 </table>
                 
-                <!-- Pagination -->
                 <div class="px-6 py-4 border-t border-gray-200">
                     {{ $movements->links() }}
                 </div>
             @else
                 <div class="text-center py-8">
                     <i class="fas fa-history text-gray-400 text-4xl mb-4"></i>
-                    <p class="text-gray-500">Tidak ada data stock movement</p>
+                    <p class="text-gray-500">{{ __('reports.stock.no_data') }}</p>
                 </div>
             @endif
         </div>

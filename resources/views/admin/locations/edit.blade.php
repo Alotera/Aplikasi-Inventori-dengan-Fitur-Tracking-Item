@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Lokasi')
-@section('page-title', 'Edit Lokasi')
-@section('page-description', 'Ubah informasi lokasi penyimpanan')
+@section('title', __('admin.locations.edit_title'))
+@section('page-title', __('admin.locations.edit_title'))
+@section('page-description', __('admin.locations.edit_page_desc'))
 
 @section('content')
 <div class="max-w-3xl mx-auto">

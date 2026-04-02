@@ -34,13 +34,13 @@ class ReportController extends Controller
         $workInstruction->status = 'completed';
         $workInstruction->save();
 
-        return redirect()->route('user.work-instructions.show', $workInstruction)->with('success', 'Laporan berhasil dikirim.');
+        return redirect()->route('user.work-instructions.show', $workInstruction)->with('success', __('messages.report_sent'));
     }
 
     protected function authorizeWI(WorkInstruction $wi): void
     {
         if ($wi->assigned_user_id !== Auth::id()) {
-            abort(403, 'Anda tidak berhak mengakses WI ini.');
+            abort(403, __('errors.wi_unauthorized'));
         }
     }
 }

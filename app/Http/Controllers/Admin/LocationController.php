@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
+use App\Models\ProductionLine;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -37,8 +38,9 @@ class LocationController extends Controller
         }
 
         $locations = $query->orderBy('name')->paginate(15)->withQueryString();
+        $productionLines = ProductionLine::query()->orderBy('name')->get();
 
-        return view('admin.locations.index', compact('locations'));
+        return view('admin.locations.index', compact('locations', 'productionLines'));
     }
 
     public function create(): View
@@ -48,29 +50,50 @@ class LocationController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'zone' => 'nullable|string|max:100',
-            'rack' => 'nullable|string|max:100',
-            'row'  => 'nullable|string|max:100',
-            'is_active' => 'nullable|boolean',
-        ]);
+        $locationType = (string) $request->validate([
+            'location_type' => 'required|in:item,production_line',
+        ])['location_type'];
 
-        $validated['is_active'] = (bool)($validated['is_active'] ?? true);
+        if ($locationType === 'item') {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'zone' => 'nullable|string|max:100',
+                'rack' => 'nullable|string|max:100',
+                'row'  => 'nullable|string|max:100',
+                'is_active' => 'nullable|boolean',
+            ]);
 
-        $duplicate = Location::where('name', $validated['name'])
-            ->where('zone', $validated['zone'] ?? null)
-            ->where('rack', $validated['rack'] ?? null)
-            ->where('row', $validated['row'] ?? null)
-            ->exists();
+            $validated['is_active'] = (bool)($validated['is_active'] ?? true);
 
-        if ($duplicate) {
-            return back()->withErrors(['name' => 'Lokasi sudah ada (kombinasi nama/zone/rack/row).'])->withInput();
+            $duplicate = Location::where('name', $validated['name'])
+                ->where('zone', $validated['zone'] ?? null)
+                ->where('rack', $validated['rack'] ?? null)
+                ->where('row', $validated['row'] ?? null)
+                ->exists();
+
+            if ($duplicate) {
+                return back()->withErrors(['name' => 'Lokasi sudah ada (kombinasi nama/zone/rack/row).'])->withInput();
+            }
+
+            Location::create($validated);
+
+            return redirect()->route('admin.locations.index')->with('success', __('messages.location.created'));
         }
 
-        Location::create($validated);
+        $validated = $request->validate([
+            'production_line_name' => 'required|string|max:255|unique:production_lines,name',
+            'production_line_is_active' => 'nullable|boolean',
+        ]);
 
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi berhasil dibuat.');
+        $validated['is_active'] = (bool)($validated['production_line_is_active'] ?? true);
+        unset($validated['production_line_is_active']);
+
+        ProductionLine::create([
+            'name' => $validated['production_line_name'],
+            'is_active' => $validated['is_active'],
+        ]);
+
+        return redirect()->route('admin.locations.index')->with('success', 'Line produksi berhasil dibuat.');
     }
 
     public function edit(Location $location): View
@@ -103,13 +126,13 @@ class LocationController extends Controller
 
         $location->update($validated);
 
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi berhasil diperbarui.');
+        return redirect()->route('admin.locations.index')->with('success', __('messages.location.updated'));
     }
 
     public function destroy(Location $location): RedirectResponse
     {
         $location->delete();
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi berhasil dihapus.');
+        return redirect()->route('admin.locations.index')->with('success', __('messages.location.deleted'));
     }
 }
 

@@ -24,15 +24,20 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            
+
             $user = Auth::user();
-            
+
             if (!$user->isActive()) {
                 Auth::logout();
                 return back()->withErrors([
-                    'email' => 'Akun Anda tidak aktif. Hubungi administrator.',
+                    'email' => __('messages.auth.inactive'),
                 ]);
             }
+
+            // Update last login timestamp for active users
+            $user->forceFill([
+                'last_login_at' => now(),
+            ])->save();
 
             if ($user->isAdmin()) {
                 return redirect()->intended(route('admin.dashboard'));
@@ -44,7 +49,7 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Kredensial tidak valid.',
+            'email' => __('messages.auth.invalid_credentials'),
         ])->onlyInput('email');
     }
 

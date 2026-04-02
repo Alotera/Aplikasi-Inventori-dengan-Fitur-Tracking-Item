@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Stock Movement Dashboard')
-@section('page-title', 'Stock Movement Dashboard')
+@section('title', __('admin.stock_movements.dashboard_title'))
+@section('page-title', __('admin.stock_movements.dashboard_title'))
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">

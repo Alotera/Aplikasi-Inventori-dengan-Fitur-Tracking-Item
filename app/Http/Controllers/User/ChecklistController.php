@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Support\AppNotifier;
 
 class ChecklistController extends Controller
 {
@@ -139,13 +140,15 @@ class ChecklistController extends Controller
         $workInstruction->refresh();
         $workInstruction->updateStatus();
 
-        return back()->with('success', 'Checklist berhasil disimpan.');
+        AppNotifier::workInstructionAdminActivity('checklist', $workInstruction, Auth::user()->name);
+
+        return back()->with('success', __('messages.checklist_saved'));
     }
 
     protected function authorizeWI(WorkInstruction $wi): void
     {
         if ($wi->assigned_user_id !== Auth::id()) {
-            abort(403, 'Anda tidak berhak mengakses WI ini.');
+            abort(403, __('errors.wi_unauthorized'));
         }
     }
 }

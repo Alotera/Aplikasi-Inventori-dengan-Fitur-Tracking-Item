@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Reports')
-@section('page-title', 'Reports')
-@section('page-description', 'Laporan dan analisis sistem inventory')
+@section('title', __('admin.reports.title'))
+@section('page-title', __('admin.reports.page_title'))
+@section('page-description', __('admin.reports.page_desc'))
 
 @section('content')
 <div class="space-y-6">
@@ -14,11 +14,11 @@
                     <div class="flex justify-center mb-6">
                         <i class="fas fa-chart-line text-blue-500 text-6xl"></i>
                     </div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Stock Movement Report</h2>
-                    <p class="text-lg text-gray-600 mb-6">Laporan lengkap pergerakan stock dari warehouse staff dengan analytics dan filtering yang komprehensif</p>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ __('admin.reports.stock_movement_title') }}</h2>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('admin.reports.stock_movement_blurb') }}</p>
                     <a href="{{ route('admin.reports.stock') }}" class="inline-flex items-center px-8 py-3 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                         <i class="fas fa-eye mr-3"></i>
-                        View Stock Report
+                        {{ __('admin.reports.view_stock_report') }}
                     </a>
                 </div>
             </div>
@@ -30,22 +30,22 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-800">
                 <i class="fas fa-chart-bar mr-2"></i>
-                Quick Statistics
+                {{ __('admin.reports.quick_stats') }}
             </h3>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="text-center">
                     <div class="text-2xl font-bold text-blue-600">{{ \App\Models\StockMovement::count() }}</div>
-                    <div class="text-sm text-gray-500">Total Stock Movements</div>
+                    <div class="text-sm text-gray-500">{{ __('admin.reports.total_movements') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-green-600">{{ \App\Models\Item::where('is_active', true)->count() }}</div>
-                    <div class="text-sm text-gray-500">Active Items</div>
+                    <div class="text-sm text-gray-500">{{ __('admin.reports.active_items') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-purple-600">{{ \App\Models\User::where('role', 'warehouse_staff')->where('is_active', true)->count() }}</div>
-                    <div class="text-sm text-gray-500">Warehouse Staff</div>
+                    <div class="text-sm text-gray-500">{{ __('admin.reports.warehouse_staff_count') }}</div>
                 </div>
             </div>
         </div>

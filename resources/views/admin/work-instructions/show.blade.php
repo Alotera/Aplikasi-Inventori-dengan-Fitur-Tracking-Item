@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Work Instruction Details')
-@section('page-title', 'Work Instruction Details')
+@section('title', __('admin.wi.show_title'))
+@section('page-title', __('admin.wi.show_title'))
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
@@ -152,6 +152,22 @@
         </div>
     </div>
 
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('admin.wi.evidence_heading') }}</h3>
+            <p class="text-sm font-medium text-gray-700 mb-2">{{ __('admin.wi.evidence_completion') }}</p>
+            @if($workInstruction->completion_evidence_path)
+                @php($compUrl = \App\Support\WiEvidenceStorage::publicUrl($workInstruction->completion_evidence_path))
+                <div class="flex flex-wrap items-center gap-4">
+                    <img src="{{ $compUrl }}" alt="" class="h-32 rounded border border-gray-200 object-cover">
+                    <a href="{{ $compUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 hover:underline">{{ __('user.wi_evidence.view_full') }}</a>
+                </div>
+            @else
+                <p class="text-sm text-gray-500">{{ __('admin.wi.evidence_completion_missing') }}</p>
+            @endif
+        </div>
+    </div>
+
     <!-- Items List -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
@@ -169,6 +185,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.wi.evidence_item_discrepancy') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -219,6 +236,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $item->pivot->notes ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    @if(!empty($item->pivot->discrepancy_evidence_path))
+                                        @php($eUrl = \App\Support\WiEvidenceStorage::publicUrl($item->pivot->discrepancy_evidence_path))
+                                        <img src="{{ $eUrl }}" alt="" class="h-16 w-auto rounded border object-cover">
+                                        <a href="{{ $eUrl }}" target="_blank" rel="noopener noreferrer" class="block text-xs text-blue-600 mt-1">{{ __('user.wi_evidence.view_full') }}</a>
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

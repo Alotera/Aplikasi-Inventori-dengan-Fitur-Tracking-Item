@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WarehouseStaff\StockController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\User\WorkInstructionController as UserWorkInstructionController;
+use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,13 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::post('/locale', [LocaleController::class, 'update'])->name('locale.switch');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+});
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -95,14 +104,14 @@ Route::middleware(['auth', 'user'])->prefix('user')->name('user.')->group(functi
     Route::get('/dashboard', function () {
         $workInstructions = \App\Models\WorkInstruction::where('assigned_user_id', auth()->id())
             ->with(['items.itemLocations', 'statusProgress'])
-            ->orderBy('deadline', 'asc')
+            ->orderByDesc('id')
             ->get();
-        
+
         // Update status untuk semua WI user
         foreach ($workInstructions as $wi) {
             $wi->updateStatus();
         }
-        
+
         return view('user.dashboard', compact('workInstructions'));
     })->name('dashboard');
 

@@ -52,15 +52,15 @@ class ReportController extends Controller
         $items = Item::where('is_active', true)->orderBy('name')->get();
         $warehouseStaff = User::where('role', 'warehouse_staff')->where('is_active', true)->orderBy('name')->get();
         $movementTypes = [
-            'IN' => 'Stock IN',
-            'OUT' => 'Stock OUT',
-            'CHECKING_RESULT' => 'Checking',
-            'WI_CONSUMPTION' => 'Ambil',
+            'IN' => __('reports.movement.IN'),
+            'OUT' => __('reports.movement.OUT'),
+            'CHECKING_RESULT' => __('reports.movement.CHECKING_RESULT'),
+            'WI_CONSUMPTION' => __('reports.movement.WI_CONSUMPTION'),
         ];
 
         // Analytics data
         $analytics = $this->getStockAnalytics($request);
-        
+
         return view('admin.reports.stock', compact('movements', 'items', 'warehouseStaff', 'movementTypes', 'analytics'));
     }
 

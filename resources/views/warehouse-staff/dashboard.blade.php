@@ -1,8 +1,8 @@
 @extends('layouts.warehouse-staff')
 
-@section('title', 'Warehouse Staff Dashboard')
-@section('page-title', 'Dashboard')
-@section('page-description', 'Overview stock management dan aktivitas warehouse')
+@section('title', __('warehouse.dashboard.title'))
+@section('page-title', __('warehouse.dashboard.page_title'))
+@section('page-description', __('warehouse.dashboard.page_desc'))
 
 @section('content')
 <div class="space-y-6">
@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Total Items</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('warehouse.dashboard.total_items') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['total_items'] }}</dd>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Low Stock Items</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('warehouse.dashboard.low_stock') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['low_stock_items'] }}</dd>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <dt class="text-sm font-medium text-gray-500 truncate">Today's Movements</dt>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{{ __('warehouse.dashboard.today_movements') }}</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $stats['today_movements'] }}</dd>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
     <!-- Quick Actions -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800">Quick Actions</h3>
+            <h3 class="text-lg font-semibold text-gray-800">{{ __('warehouse.dashboard.quick_actions') }}</h3>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -70,8 +70,8 @@
                         <i class="fas fa-plus text-green-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h4 class="font-semibold text-gray-800">Stock IN</h4>
-                        <p class="text-sm text-gray-600">Tambah stock barang</p>
+                        <h4 class="font-semibold text-gray-800">{{ __('nav.stock_in') }}</h4>
+                        <p class="text-sm text-gray-600">{{ __('warehouse.dashboard.stock_in_desc') }}</p>
                     </div>
                 </a>
 
@@ -81,8 +81,8 @@
                         <i class="fas fa-minus text-red-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h4 class="font-semibold text-gray-800">Stock OUT</h4>
-                        <p class="text-sm text-gray-600">Kurangi stock barang</p>
+                        <h4 class="font-semibold text-gray-800">{{ __('nav.stock_out') }}</h4>
+                        <p class="text-sm text-gray-600">{{ __('warehouse.dashboard.stock_out_desc') }}</p>
                     </div>
                 </a>
             </div>
@@ -93,10 +93,10 @@
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-gray-800">Recent Stock Movements</h3>
+                <h3 class="text-lg font-semibold text-gray-800">{{ __('warehouse.dashboard.recent_movements') }}</h3>
                 <a href="{{ route('warehouse-staff.stock-history') }}" 
                    class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    View All <i class="fas fa-arrow-right ml-1"></i>
+                    {{ __('warehouse.dashboard.view_all') }} <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
         </div>
@@ -105,15 +105,16 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('nav.items') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.type') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.quantity') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.name') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.date') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($recentMovements as $movement)
+                        @php($mtKey = $movement->movement_type)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $movement->item->name }}</div>
@@ -134,7 +135,7 @@
                                         @elseif($movement->movement_type === 'WI_CONSUMPTION') fa-clipboard-list
                                         @else fa-exchange-alt
                                         @endif mr-1"></i>
-                                    {{ $movement->movement_type }}
+                                    {{ __('reports.movement.'.$mtKey) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -160,7 +161,7 @@
             @else
                 <div class="text-center py-8">
                     <i class="fas fa-history text-gray-400 text-4xl mb-4"></i>
-                    <p class="text-gray-500">Belum ada stock movement</p>
+                    <p class="text-gray-500">{{ __('warehouse.dashboard.no_movements') }}</p>
                 </div>
             @endif
         </div>

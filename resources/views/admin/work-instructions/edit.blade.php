@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Work Instruction')
-@section('page-title', 'Edit Work Instruction')
+@section('title', __('admin.wi.edit_title'))
+@section('page-title', __('admin.wi.edit_title'))
 
 @section('content')
 <div class="max-w-4xl mx-auto">
@@ -17,12 +17,9 @@
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="wi_number" class="block text-sm font-medium text-gray-700">WI Number *</label>
-                                <input type="text" name="wi_number" id="wi_number" value="{{ old('wi_number', $workInstruction->wi_number) }}" required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm @error('wi_number') border-red-300 @enderror">
-                                @error('wi_number')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                                <label for="wi_number" class="block text-sm font-medium text-gray-700">WI Number</label>
+                                <input type="text" name="wi_number" id="wi_number" value="{{ $workInstruction->wi_number }}" readonly
+                                       class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md shadow-sm sm:text-sm">
                             </div>
 
                             <div>
@@ -62,12 +59,22 @@
                                 <div>
                                     <label for="destination_line" class="block text-sm font-medium text-gray-700">
                                         <i class="fas fa-map-marker-alt mr-1 text-blue-500"></i>
-                                        Tujuan Line Produksi *
+                                        {{ __('admin.wi.destination_line_required') }}
                                     </label>
-                                    <input type="text" name="destination_line" id="destination_line" value="{{ old('destination_line', $workInstruction->destination_line) }}"
-                                           placeholder="contoh: Line A, Line Assembling 1, Production Line B"
-                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm @error('destination_line') border-red-300 @enderror">
-                                    <p class="mt-1 text-xs text-gray-500">Tentukan nama line produksi tujuan pengiriman barang</p>
+                                    @php($currentDestinationLine = old('destination_line', $workInstruction->destination_line))
+                                    <select name="destination_line" id="destination_line" required
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm @error('destination_line') border-red-300 @enderror">
+                                        <option value="">{{ __('admin.wi.select_destination_line') }}</option>
+                                        @if(!empty($currentDestinationLine) && ! $productionLines->contains(fn($pl) => $pl->name === $currentDestinationLine))
+                                            <option value="{{ $currentDestinationLine }}" selected>{{ $currentDestinationLine }}</option>
+                                        @endif
+                                        @foreach($productionLines as $pl)
+                                            <option value="{{ $pl->name }}" {{ $currentDestinationLine === $pl->name ? 'selected' : '' }}>
+                                                {{ $pl->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500">{{ __('admin.wi.destination_line_help') }}</p>
                                     @error('destination_line')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror

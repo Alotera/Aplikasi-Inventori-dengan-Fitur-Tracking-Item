@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Create User')
-@section('page-title', 'Create New User')
+@section('title', __('admin.users.create_title'))
+@section('page-title', __('admin.users.create_page_title'))
 
 @section('content')
 <div class="max-w-2xl mx-auto">

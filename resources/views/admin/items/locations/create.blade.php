@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Add Item Location')
-@section('page-title', 'Add Item Location')
+@section('title', __('admin.item_locations.create_title'))
+@section('page-title', __('admin.item_locations.create_title'))
 
 @section('content')
 <div class="max-w-3xl mx-auto">

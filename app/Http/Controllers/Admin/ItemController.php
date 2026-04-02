@@ -70,7 +70,7 @@ class ItemController extends Controller
         ]);
 
         return redirect()->route('admin.items.index')
-                        ->with('success', 'Item berhasil dibuat!');
+                        ->with('success', __('messages.item.created'));
     }
 
     public function show(Item $item): View
@@ -140,13 +140,13 @@ class ItemController extends Controller
         }
 
         return redirect()->route('admin.items.index')
-                        ->with('success', 'Item berhasil diperbarui!');
+                        ->with('success', __('messages.item.updated'));
     }
 
     public function destroy(Item $item): RedirectResponse
     {
         $item->delete();
         return redirect()->route('admin.items.index')
-                        ->with('success', 'Item berhasil dihapus!');
+                        ->with('success', __('messages.item.deleted'));
     }
 }

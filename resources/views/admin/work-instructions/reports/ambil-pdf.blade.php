@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <title>Work Instruction Report - Ambil</title>
+    <title>{{ __('admin.wi.show_title') }} — {{ __('user.wi_type.ambil') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;

@@ -1,19 +1,19 @@
 @extends('layouts.admin')
 
-@section('title', 'Items Management')
-@section('page-title', 'Items Management')
+@section('title', __('admin.items.title'))
+@section('page-title', __('admin.items.page_title'))
 
 @section('content')
 <div class="space-y-6">
     <!-- Header Actions -->
     <div class="flex justify-between items-center">
         <div>
-            <h2 class="text-lg font-medium text-gray-900">Items</h2>
-            <p class="text-sm text-gray-600">Manage your inventory items</p>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('admin.items.heading') }}</h2>
+            <p class="text-sm text-gray-600">{{ __('admin.items.subtitle') }}</p>
         </div>
         <a href="{{ route('admin.items.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
             <i class="fas fa-plus mr-2"></i>
-            Add New Item
+            {{ __('admin.items.add_new') }}
         </a>
     </div>
 
@@ -23,13 +23,13 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Code</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min Stock</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.item_code') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.name') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.category') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.current_stock') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.min_stock') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.status') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('admin.items.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -57,12 +57,12 @@
                             @if($item->isLowStock())
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     <i class="fas fa-exclamation-triangle mr-1"></i>
-                                    Low Stock
+                                    {{ __('admin.items.low_stock') }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     <i class="fas fa-check-circle mr-1"></i>
-                                    Normal
+                                    {{ __('admin.items.normal') }}
                                 </span>
                             @endif
                         </td>
@@ -74,7 +74,7 @@
                                 <a href="{{ route('admin.items.edit', $item) }}" class="text-yellow-600 hover:text-yellow-900">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form method="POST" action="{{ route('admin.items.destroy', $item) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this item?')">
+                                <form method="POST" action="{{ route('admin.items.destroy', $item) }}" class="inline" onsubmit="return confirm(@json(__('admin.items.delete_confirm')))">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-900">
@@ -87,7 +87,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                            No items found. <a href="{{ route('admin.items.create') }}" class="text-blue-600 hover:text-blue-800">Create your first item</a>
+                            {{ __('admin.items.empty') }} <a href="{{ route('admin.items.create') }}" class="text-blue-600 hover:text-blue-800">{{ __('admin.items.empty_create') }}</a>
                         </td>
                     </tr>
                     @endforelse

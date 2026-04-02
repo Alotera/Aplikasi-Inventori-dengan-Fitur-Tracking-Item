@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Lokasi')
-@section('page-title', 'Manajemen Lokasi')
-@section('page-description', 'Kelola lokasi penyimpanan barang di warehouse')
+@section('title', __('admin.locations.title'))
+@section('page-title', __('admin.locations.page_title'))
+@section('page-description', __('admin.locations.subtitle'))
 
 @section('content')
 <div class="space-y-6">
@@ -166,6 +166,40 @@
                 {{ $locations->links() }}
             </div>
         @endif
+    </div>
+
+    <!-- Production Lines (read-only) -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Line Produksi</h3>
+            @if($productionLines->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($productionLines as $pl)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ $pl->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $pl->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                            <i class="fas {{ $pl->is_active ? 'fa-check-circle' : 'fa-times-circle' }} mr-1"></i>
+                                            {{ $pl->is_active ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-sm text-gray-500">Belum ada line produksi. Tambahkan dari menu Tambah Lokasi.</p>
+            @endif
+        </div>
     </div>
 </div>
 @endsection

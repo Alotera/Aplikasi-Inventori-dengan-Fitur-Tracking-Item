@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Work Instruction Bulk Report')
-@section('page-title', 'Work Instruction Bulk Report')
-@section('page-description', 'Generate laporan PDF untuk Work Instruction dengan filter yang komprehensif')
+@section('title', __('admin.wi.bulk_report_title'))
+@section('page-title', __('admin.wi.bulk_report_title'))
+@section('page-description', __('admin.wi.bulk_report_desc'))
 
 @section('content')
 <div class="space-y-6">

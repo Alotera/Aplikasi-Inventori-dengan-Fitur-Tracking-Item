@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <title>Stock Movement Report - {{ now()->format('d/m/Y') }}</title>
+    <title>{{ __('reports.stock.title') }} — {{ now()->format('d/m/Y') }}</title>
     <style>
         @page {
             margin: 20mm;

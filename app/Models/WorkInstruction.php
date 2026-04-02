@@ -25,6 +25,7 @@ class WorkInstruction extends Model
         'completed_at',
         'status',
         'notes',
+        'completion_evidence_path',
     ];
 
     protected $casts = [
@@ -40,7 +41,14 @@ class WorkInstruction extends Model
     public function items(): BelongsToMany
     {
         return $this->belongsToMany(Item::class, 'work_instruction_items')
-                    ->withPivot(['required_quantity', 'actual_quantity', 'condition', 'status', 'notes'])
+                    ->withPivot([
+                        'required_quantity',
+                        'actual_quantity',
+                        'condition',
+                        'status',
+                        'notes',
+                        'discrepancy_evidence_path',
+                    ])
                     ->withTimestamps();
     }
 
@@ -73,8 +81,14 @@ class WorkInstruction extends Model
         if ($itemsCount === 0) {
             $statusProgress->status_progress = 'pending';
         } elseif (!$this->items()->wherePivot('status', 'pending')->exists()) {
-            // all items finished
-            $statusProgress->status_progress = 'completed';
+            if ($this->status === 'completed') {
+                $statusProgress->status_progress = 'completed';
+            } else {
+                // All line items processed; WI completion photo is still required for new completions.
+                $statusProgress->status_progress = ! empty($this->completion_evidence_path)
+                    ? 'completed'
+                    : 'in_progress';
+            }
         } elseif ($this->hasStarted()) {
             $statusProgress->status_progress = 'in_progress';
         } else {
@@ -161,11 +175,9 @@ class WorkInstruction extends Model
      */
     public function getStatusLabel(): string
     {
-        return match($this->status) {
-            'not_started' => 'Belum Dikerjakan',
-            'completed' => 'Selesai',
-            'overdue' => 'Terlambat',
-            default => 'Unknown'
+        return match ($this->status) {
+            'not_started', 'completed', 'overdue' => __('user.wi_status.main.'.$this->status),
+            default => __('user.wi_status.unknown'),
         };
     }
 
@@ -174,11 +186,53 @@ class WorkInstruction extends Model
      */
     public function getProgressionLabel(): string
     {
-        return match($this->getProgressionStatus()) {
-            'pending' => 'Pending',
-            'in_progress' => 'Dalam Proses',
-            'completed' => 'Selesai',
-            default => 'Unknown'
+        $p = $this->getProgressionStatus();
+
+        return match ($p) {
+            'pending', 'in_progress', 'completed' => __('user.wi_status.progression.'.$p),
+            default => __('user.wi_status.unknown'),
+        };
+    }
+
+    /**
+     * Short explanation for Work Instruction type (for UI tooltips).
+     */
+    public function getTypeExplanation(): string
+    {
+        return match ($this->type) {
+            'checking' => __('user.type_explanation.checking'),
+            'ambil' => __('user.type_explanation.ambil'),
+            default => __('user.type_explanation.default'),
+        };
+    }
+
+    /**
+     * Short explanation for main status (for UI tooltips).
+     */
+    public function getMainStatusExplanation(): string
+    {
+        $status = $this->getMainStatus();
+
+        return match ($status) {
+            'not_started' => __('user.main_status_explanation.not_started'),
+            'completed' => __('user.main_status_explanation.completed'),
+            'overdue' => __('user.main_status_explanation.overdue'),
+            default => __('user.main_status_explanation.default'),
+        };
+    }
+
+    /**
+     * Short explanation for progression status (for UI tooltips).
+     */
+    public function getProgressionStatusExplanation(): string
+    {
+        $p = $this->getProgressionStatus();
+
+        return match ($p) {
+            'pending' => __('user.progression_explanation.pending'),
+            'in_progress' => __('user.progression_explanation.in_progress'),
+            'completed' => __('user.progression_explanation.completed'),
+            default => __('user.progression_explanation.default'),
         };
     }
 }

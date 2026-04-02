@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Lokasi')
-@section('page-title', 'Tambah Lokasi')
-@section('page-description', 'Buat lokasi penyimpanan baru di warehouse')
+@section('title', __('admin.locations.create_title'))
+@section('page-title', __('admin.locations.create_title'))
+@section('page-description', __('admin.locations.create_page_desc'))
 
 @section('content')
 <div class="max-w-3xl mx-auto">
@@ -23,8 +23,29 @@
         
         <form method="POST" action="{{ route('admin.locations.store') }}" class="px-6 py-6">
             @csrf
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label for="location_type" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tipe yang ditambahkan <span class="text-red-500">*</span>
+                    </label>
+                    <select name="location_type" id="location_type" required
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 text-sm">
+                        <option value="item" {{ old('location_type', 'item') === 'item' ? 'selected' : '' }}>
+                            Lokasi item
+                        </option>
+                        <option value="production_line" {{ old('location_type') === 'production_line' ? 'selected' : '' }}>
+                            Line produksi
+                        </option>
+                    </select>
+                    @error('location_type')
+                        <p class="mt-1 text-sm text-red-600">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                        </p>
+                    @enderror
+                </div>
+            </div>
 
-            <div class="space-y-6">
+            <div id="location-item-fields" class="space-y-6">
                 <!-- Nama Lokasi -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -93,6 +114,43 @@
                 </div>
             </div>
 
+            <div id="production-line-fields" class="space-y-6" style="{{ old('location_type', 'item') === 'production_line' ? '' : 'display:none;' }}">
+                <!-- Nama Line Produksi -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Nama Line Produksi <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text"
+                           name="production_line_name"
+                           value="{{ old('production_line_name') }}"
+                           required
+                           placeholder="Contoh: Line A, Assembling 1, Production Line B"
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm @error('production_line_name') border-red-300 @enderror">
+                    @error('production_line_name')
+                        <p class="mt-1 text-sm text-red-600">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <!-- Status -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <input type="checkbox"
+                               name="production_line_is_active"
+                               id="production_line_is_active"
+                               value="1"
+                               @checked(old('production_line_is_active', true))
+                               class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                        <label for="production_line_is_active" class="ml-3 flex items-center">
+                            <i class="fas fa-toggle-on text-green-600 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-900">Line produksi aktif</span>
+                        </label>
+                    </div>
+                    <p class="ml-7 mt-1 text-xs text-gray-500">Line aktif akan muncul di dropdown tujuan pengiriman.</p>
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="mt-8 flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
                 <a href="{{ route('admin.locations.index') }}" 
@@ -109,6 +167,31 @@
         </form>
     </div>
 </div>
+<script>
+function toggleLocationType() {
+    const type = document.getElementById('location_type')?.value;
+    const itemFields = document.getElementById('location-item-fields');
+    const productionFields = document.getElementById('production-line-fields');
+    if (!type || !itemFields || !productionFields) return;
+
+    if (type === 'production_line') {
+        itemFields.style.display = 'none';
+        itemFields.querySelectorAll('input,select,textarea,button').forEach(el => el.disabled = true);
+        productionFields.style.display = '';
+        productionFields.querySelectorAll('input,select,textarea,button').forEach(el => el.disabled = false);
+    } else {
+        productionFields.style.display = 'none';
+        productionFields.querySelectorAll('input,select,textarea,button').forEach(el => el.disabled = true);
+        itemFields.style.display = '';
+        itemFields.querySelectorAll('input,select,textarea,button').forEach(el => el.disabled = false);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    toggleLocationType();
+    document.getElementById('location_type')?.addEventListener('change', toggleLocationType);
+});
+</script>
 @endsection
 
 

@@ -1,25 +1,49 @@
 @extends('layouts.user')
 
-@section('title', 'Work Instruction Details')
-@section('page-title', 'Work Instruction Details')
+@section('title', __('user.wi_show.title'))
+@section('page-title', __('user.wi_show.title'))
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
+    @if($errors->any())
+        <div class="rounded-md bg-red-50 p-4 text-sm text-red-800 border border-red-200">
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- Header Actions -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
         <div>
             <h2 class="text-lg font-medium text-gray-900">{{ $workInstruction->wi_number }}</h2>
             <p class="text-sm text-gray-600">{{ $workInstruction->title }}</p>
         </div>
-        <div class="flex space-x-3">
+        <div class="flex flex-col items-stretch sm:items-end gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
             @if($workInstruction->getProgressionStatus() === 'in_progress')
-                <button type="button" onclick="scrollToItems()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                    <i class="fas fa-edit mr-2"></i>
-                    Update Progress
-                </button>
-                <form method="POST" action="{{ route('user.work-instructions.complete', $workInstruction) }}" class="inline" onsubmit="return confirm('Are you sure you want to complete this work instruction?')">
+                <form method="POST" action="{{ route('user.work-instructions.complete', $workInstruction) }}" enctype="multipart/form-data" class="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 w-full sm:w-auto" onsubmit="return confirm('Are you sure you want to complete this work instruction?')">
                     @csrf
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                    <div class="w-full sm:w-72 sm:min-w-[18rem]">
+                        <label for="completion_evidence" class="block text-xs font-medium text-gray-600 mb-1">{{ __('user.wi_evidence.completion_label') }}</label>
+                        <input type="file" name="completion_evidence" id="completion_evidence" accept="image/jpeg,image/png,image/webp"
+                               class="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer"
+                               {{ $workInstruction->completion_evidence_path ? '' : 'required' }}>
+                        <p class="mt-1 text-xs text-gray-500">{{ $workInstruction->completion_evidence_path ? __('user.wi_evidence.completion_saved_hint') : __('user.wi_evidence.completion_hint') }}</p>
+                        @if($workInstruction->completion_evidence_path)
+                            @php($completionUrl = \App\Support\WiEvidenceStorage::publicUrl($workInstruction->completion_evidence_path))
+                            <div class="mt-2 flex items-center gap-2">
+                                <img src="{{ $completionUrl }}" alt="" class="h-16 w-auto rounded border object-cover">
+                                <a href="{{ $completionUrl }}" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:underline">{{ __('user.wi_evidence.view_full') }}</a>
+                            </div>
+                        @endif
+                    </div>
+                    <button type="button" onclick="scrollToItems()" class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shrink-0">
+                        <i class="fas fa-edit mr-2"></i>
+                        Update Progress
+                    </button>
+                    <button type="submit" class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 shrink-0">
                         <i class="fas fa-check mr-2"></i>
                         Complete Work Instruction
                     </button>
@@ -208,7 +232,7 @@
             @if($workInstruction->items->count() > 0)
                 <div class="space-y-4">
                     @foreach($workInstruction->items as $item)
-                    <div class="border border-gray-200 rounded-lg p-4 {{ $item->pivot->status === 'completed' ? 'bg-green-50' : ($item->pivot->status === 'not_good' ? 'bg-orange-50' : 'bg-gray-50') }}">
+                    <div class="border border-gray-200 rounded-lg p-4 {{ $item->pivot->status === 'completed' ? 'bg-green-50' : (in_array($item->pivot->status, ['not_good', 'not_found'], true) ? 'bg-orange-50' : 'bg-gray-50') }}">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-3 mb-3">
@@ -221,10 +245,10 @@
                                             <i class="fas fa-check-circle mr-1"></i>
                                             Completed
                                         </span>
-                                    @elseif($item->pivot->status === 'not_good')
+                                    @elseif(in_array($item->pivot->status, ['not_good', 'not_found'], true))
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                                            Discrepancy
+                                            {{ __('user.item_pivot.'.$item->pivot->status) }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -260,7 +284,7 @@
                                                 Checklist Pengambilan
                                             </h5>
                                             
-                                            <form method="POST" action="{{ route('user.work-instructions.update-item', $workInstruction) }}" class="space-y-4">
+                                            <form method="POST" action="{{ route('user.work-instructions.update-item', $workInstruction) }}" enctype="multipart/form-data" class="space-y-4">
                                                 @csrf
                                                 <input type="hidden" name="item_id" value="{{ $item->id }}">
                                                 <input type="hidden" name="actual_quantity" value="{{ $item->pivot->required_quantity }}">
@@ -300,7 +324,7 @@
                                                 Update Checking Progress
                                             </h5>
                                             
-                                            <form method="POST" action="{{ route('user.work-instructions.update-item', $workInstruction) }}" class="space-y-4">
+                                            <form method="POST" action="{{ route('user.work-instructions.update-item', $workInstruction) }}" enctype="multipart/form-data" class="space-y-4">
                                                 @csrf
                                                 <input type="hidden" name="item_id" value="{{ $item->id }}">
                                                 
@@ -310,14 +334,15 @@
                                                         <input type="number" name="actual_quantity" id="actual_quantity_{{ $item->id }}" 
                                                                value="{{ $item->pivot->actual_quantity }}" min="0" required
                                                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                               onchange="updateStatusBasedOnQuantity({{ $item->id }}, {{ $item->pivot->required_quantity }})"
-                                                               oninput="updateStatusBasedOnQuantity({{ $item->id }}, {{ $item->pivot->required_quantity }})">
+                                                               onchange="syncCheckingItemRow({{ $item->id }}, {{ $item->pivot->required_quantity }})"
+                                                               oninput="syncCheckingItemRow({{ $item->id }}, {{ $item->pivot->required_quantity }})">
                                                     </div>
                                                     
                                                     <div>
                                                         <label for="condition_{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">Condition *</label>
                                                         <select name="condition" id="condition_{{ $item->id }}" required
-                                                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                onchange="syncCheckingItemRow({{ $item->id }}, {{ $item->pivot->required_quantity }})">
                                                             <option value="">Select Condition</option>
                                                             <option value="good" {{ $item->pivot->condition === 'good' ? 'selected' : '' }}>Good</option>
                                                             <option value="not_good" {{ $item->pivot->condition === 'not_good' ? 'selected' : '' }}>Discrepancy</option>
@@ -332,7 +357,7 @@
                                                             <option value="completed" {{ $item->pivot->status === 'completed' ? 'selected' : '' }}>Completed</option>
                                                             <option value="not_good" {{ $item->pivot->status === 'not_good' ? 'selected' : '' }}>Discrepancy</option>
                                                         </select>
-                                                        <p class="mt-1 text-xs text-gray-500">Status ditentukan otomatis berdasarkan quantity</p>
+                                                        <p class="mt-1 text-xs text-gray-500">{{ __('user.wi_evidence.status_auto_hint') }}</p>
                                                     </div>
                                                     
                                                     <div>
@@ -343,9 +368,16 @@
                                                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                                     </div>
                                                 </div>
-                                                
-                                                <div class="flex justify-end">
-                                                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+
+                                                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-end gap-3 pt-2">
+                                                    <div id="discrepancy_photo_wrap_{{ $item->id }}" class="hidden w-full sm:flex-1 sm:max-w-md sm:min-w-[220px]">
+                                                        <label for="discrepancy_photo_{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">{{ __('user.wi_evidence.discrepancy_label') }} *</label>
+                                                        <input type="file" name="discrepancy_photo" id="discrepancy_photo_{{ $item->id }}"
+                                                               accept="image/jpeg,image/png,image/webp"
+                                                               class="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer">
+                                                        <p class="mt-1 text-xs text-gray-500">{{ __('user.wi_evidence.discrepancy_hint') }}</p>
+                                                    </div>
+                                                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shrink-0 self-end">
                                                         <i class="fas fa-check mr-2"></i>
                                                         Mark as Checked
                                                     </button>
@@ -353,8 +385,8 @@
                                             </form>
                                         </div>
                                     @endif
-                                @elseif($item->pivot->status === 'not_good')
-                                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                @elseif(in_array($item->pivot->status, ['not_good', 'not_found'], true))
+                                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 space-y-3">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
                                                 <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
@@ -377,6 +409,25 @@
                                         </div>
                                         @if($item->pivot->notes)
                                             <p class="text-xs text-orange-600 mt-1">{{ $item->pivot->notes }}</p>
+                                        @endif
+                                        @if($item->pivot->discrepancy_evidence_path)
+                                            @php($discUrl = \App\Support\WiEvidenceStorage::publicUrl($item->pivot->discrepancy_evidence_path))
+                                            <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-orange-200">
+                                                <img src="{{ $discUrl }}" alt="" class="h-24 rounded border border-orange-200 object-cover">
+                                                <a href="{{ $discUrl }}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-blue-700 hover:underline">{{ __('user.wi_evidence.view_full') }}</a>
+                                            </div>
+                                        @elseif($workInstruction->getProgressionStatus() === 'in_progress')
+                                            <form method="POST" action="{{ route('user.work-instructions.update-item', $workInstruction) }}" enctype="multipart/form-data" class="pt-2 border-t border-orange-200 space-y-2">
+                                                @csrf
+                                                <input type="hidden" name="item_id" value="{{ $item->id }}">
+                                                <input type="hidden" name="discrepancy_upload_only" value="1">
+                                                <label class="block text-xs font-medium text-orange-900">{{ __('user.wi_evidence.discrepancy_upload_only') }}</label>
+                                                <input type="file" name="discrepancy_photo" required accept="image/jpeg,image/png,image/webp"
+                                                       class="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer">
+                                                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+                                                    {{ __('user.wi_evidence.discrepancy_upload_only') }}
+                                                </button>
+                                            </form>
                                         @endif
                                     </div>
                                 @elseif($item->pivot->status === 'completed')
@@ -439,7 +490,7 @@
                 </div>
                 @if($workInstruction->type === 'checking')
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-red-600">{{ $workInstruction->items->where('pivot.status', 'not_good')->count() }}</div>
+                    <div class="text-2xl font-bold text-red-600">{{ $workInstruction->items->filter(fn ($i) => in_array($i->pivot->status, ['not_good', 'not_found'], true))->count() }}</div>
                     <div class="text-sm text-gray-500">Discrepancy</div>
                 </div>
                 @endif
@@ -465,26 +516,45 @@ function scrollToItems() {
     document.getElementById('items-section').scrollIntoView({ behavior: 'smooth' });
 }
 
-function updateStatusBasedOnQuantity(itemId, requiredQuantity) {
+function syncCheckingItemRow(itemId, requiredQuantity) {
     const actualQuantityInput = document.getElementById('actual_quantity_' + itemId);
     const statusSelect = document.getElementById('status_' + itemId);
-    
+    const conditionSelect = document.getElementById('condition_' + itemId);
+    const wrap = document.getElementById('discrepancy_photo_wrap_' + itemId);
+    const photoInput = document.getElementById('discrepancy_photo_' + itemId);
+
+    const actualQuantity = actualQuantityInput ? (parseInt(actualQuantityInput.value, 10) || 0) : 0;
+    const conditionVal = conditionSelect ? conditionSelect.value : '';
+    const qtyMismatch = actualQuantity !== requiredQuantity;
+    const needsDiscrepancyEvidence = conditionVal === 'not_good' || qtyMismatch;
+
     if (actualQuantityInput && statusSelect) {
-        const actualQuantity = parseInt(actualQuantityInput.value) || 0;
-        
-        if (actualQuantity === requiredQuantity) {
-            statusSelect.value = 'completed';
-        } else {
+        if (conditionVal === 'not_good' || qtyMismatch) {
             statusSelect.value = 'not_good';
-        }
-        
-        // Update visual feedback
-        if (actualQuantity === requiredQuantity) {
-            statusSelect.style.backgroundColor = '#dcfce7'; // green background
         } else {
-            statusSelect.style.backgroundColor = '#fef2f2'; // red background
+            statusSelect.value = 'completed';
+        }
+        statusSelect.style.backgroundColor = statusSelect.value === 'completed' ? '#dcfce7' : '#fef2f2';
+    }
+
+    if (wrap && photoInput && actualQuantityInput) {
+        if (needsDiscrepancyEvidence) {
+            wrap.classList.remove('hidden');
+            photoInput.setAttribute('required', 'required');
+        } else {
+            wrap.classList.add('hidden');
+            photoInput.removeAttribute('required');
+            photoInput.value = '';
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    @foreach($workInstruction->items as $initItem)
+        @if($initItem->pivot->status === 'pending' && $workInstruction->type === 'checking')
+            syncCheckingItemRow({{ $initItem->id }}, {{ $initItem->pivot->required_quantity }});
+        @endif
+    @endforeach
+});
 </script>
 @endsection

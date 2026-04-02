@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'User Details')
-@section('page-title', 'User Details')
+@section('title', __('admin.users.show_title'))
+@section('page-title', __('admin.users.show_title'))
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
@@ -84,10 +84,231 @@
                         @endif
                     </p>
                 </div>
+                @if($user->role === 'admin')
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Last WI Created</label>
+                    <p class="mt-1 text-sm text-gray-900">
+                        @if($adminWiStats['last_wi_created_at'])
+                            {{ \Carbon\Carbon::parse($adminWiStats['last_wi_created_at'])->format('d M Y H:i') }}
+                            <span class="text-gray-500">({{ \Carbon\Carbon::parse($adminWiStats['last_wi_created_at'])->diffForHumans() }})</span>
+                        @else
+                            <span class="text-gray-400">No WI activity yet</span>
+                        @endif
+                    </p>
+                </div>
+                @endif
             </div>
         </div>
     </div>
 
+    @if($user->role === 'warehouse_staff')
+    <!-- Stock Activity Statistics -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Stock Activity Statistics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900">{{ $stockStats['total_movements'] }}</div>
+                    <div class="text-sm text-gray-500">Total Movements</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ $stockStats['movements_30_days'] }}</div>
+                    <div class="text-sm text-gray-500">Last 30 Days</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600">{{ $stockStats['stock_in_30_days'] }}</div>
+                    <div class="text-sm text-gray-500">Stock IN (30 Days)</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600">{{ $stockStats['stock_out_30_days'] }}</div>
+                    <div class="text-sm text-gray-500">Stock OUT (30 Days)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Activity Summary -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Operational Summary</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Last Stock Activity</p>
+                    <p class="mt-1 text-sm text-gray-900">
+                        @if($stockStats['last_activity_at'])
+                            {{ \Carbon\Carbon::parse($stockStats['last_activity_at'])->format('d M Y H:i') }}
+                            <span class="text-gray-500">({{ \Carbon\Carbon::parse($stockStats['last_activity_at'])->diffForHumans() }})</span>
+                        @else
+                            <span class="text-gray-400">No activity yet</span>
+                        @endif
+                    </p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Today's Activities</p>
+                    <p class="mt-1 text-sm text-gray-900">{{ $stockStats['movements_today'] }} movements</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">IN/OUT Ratio (30 Days)</p>
+                    <p class="mt-1 text-sm text-gray-900">
+                        {{ $stockStats['stock_in_30_days'] }} : {{ $stockStats['stock_out_30_days'] }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Stock Movements -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Stock Movements</h3>
+
+            @if($recentStockMovements->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Before -> After</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($recentStockMovements as $movement)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $movement->created_at->format('d M Y H:i') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ $movement->item?->name ?? '-' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $movement->item?->item_code ?? '-' }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $movement->movement_type_color }}">
+                                        {{ $movement->movement_type_label }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {{ $movement->quantity >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $movement->formatted_quantity }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ number_format($movement->before_quantity ?? 0) }} -> {{ number_format($movement->after_quantity ?? 0) }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                    {{ $movement->notes ?: '-' }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <i class="fas fa-history text-gray-400 text-4xl mb-4"></i>
+                    <p class="text-gray-500">Belum ada aktivitas stok dari user ini</p>
+                </div>
+            @endif
+        </div>
+    </div>
+    @elseif($user->role === 'admin')
+    <!-- Admin Management Statistics -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Admin Management Statistics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900">{{ $adminWiStats['total_wi'] }}</div>
+                    <div class="text-sm text-gray-500">Total Work Instructions</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ $adminWiStats['wi_30_days'] }}</div>
+                    <div class="text-sm text-gray-500">Created (30 Days)</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600">{{ $adminWiStats['completed'] }}</div>
+                    <div class="text-sm text-gray-500">Completed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600">{{ $adminWiStats['overdue'] }}</div>
+                    <div class="text-sm text-gray-500">Overdue</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Managed Work Instructions -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Managed Work Instructions</h3>
+
+            @if($recentManagedWorkInstructions->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WI Number</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($recentManagedWorkInstructions as $wi)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <a href="{{ route('admin.work-instructions.show', $wi) }}" class="text-blue-600 hover:text-blue-800">
+                                        {{ $wi->wi_number }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $wi->type === 'checking' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                                        <i class="fas {{ $wi->type === 'checking' ? 'fa-search' : 'fa-hand-holding' }} mr-1"></i>
+                                        {{ ucfirst($wi->type) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ $wi->title }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $wi->assignedUser?->name ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $wi->deadline->format('d M Y H:i') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        @if($wi->status === 'completed') bg-green-100 text-green-800
+                                        @elseif($wi->status === 'overdue') bg-red-100 text-red-800
+                                        @elseif($wi->status === 'in_progress') bg-yellow-100 text-yellow-800
+                                        @else bg-gray-100 text-gray-800
+                                        @endif">
+                                        <i class="fas
+                                            @if($wi->status === 'completed') fa-check-circle
+                                            @elseif($wi->status === 'overdue') fa-exclamation-triangle
+                                            @elseif($wi->status === 'in_progress') fa-clock
+                                            @else fa-pause-circle
+                                            @endif mr-1"></i>
+                                        {{ ucfirst(str_replace('_', ' ', $wi->status)) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <i class="fas fa-clipboard-list text-gray-400 text-4xl mb-4"></i>
+                    <p class="text-gray-500">Belum ada work instructions untuk dimonitor</p>
+                </div>
+            @endif
+        </div>
+    </div>
+    @else
     <!-- Work Instruction Statistics -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
@@ -110,7 +331,7 @@
                     <div class="text-sm text-gray-500">Overdue</div>
                 </div>
             </div>
-            
+
             @if($wiStats['total'] > 0)
                 <div class="mt-6">
                     <div class="flex justify-between text-sm text-gray-600 mb-1">
@@ -129,7 +350,7 @@
     <div class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Work Instructions</h3>
-            
+
             @if($recentWorkInstructions->count() > 0)
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -176,7 +397,7 @@
                                         @elseif($wi->status === 'in_progress') bg-yellow-100 text-yellow-800
                                         @else bg-gray-100 text-gray-800
                                         @endif">
-                                        <i class="fas 
+                                        <i class="fas
                                             @if($wi->status === 'completed') fa-check-circle
                                             @elseif($wi->status === 'overdue') fa-exclamation-triangle
                                             @elseif($wi->status === 'in_progress') fa-clock
@@ -204,6 +425,7 @@
             @endif
         </div>
     </div>
+    @endif
 
     <!-- Quick Actions -->
     @if($user->id !== auth()->id())

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use App\Support\AppNotifier;
 use Carbon\Carbon;
 
 class StockController extends Controller
@@ -59,10 +60,10 @@ class StockController extends Controller
             'reason' => 'required|string|max:255',
             'notes' => 'nullable|string|max:1000',
         ], [
-            'item_id.required' => 'Item harus dipilih.',
-            'quantity.required' => 'Jumlah harus diisi.',
-            'quantity.min' => 'Jumlah minimal 1.',
-            'reason.required' => 'Alasan stock in harus diisi.',
+            'item_id.required' => __('warehouse.validation.item_required'),
+            'quantity.required' => __('warehouse.validation.quantity_required'),
+            'quantity.min' => __('warehouse.validation.quantity_min'),
+            'reason.required' => __('warehouse.validation.reason_in_required'),
         ]);
 
         try {
@@ -89,13 +90,19 @@ class StockController extends Controller
 
             DB::commit();
 
+            AppNotifier::stockMovement('in', $user, $item, (int) $validated['quantity']);
+
             return redirect()->route('warehouse-staff.dashboard')
-                ->with('success', "Stock IN berhasil! {$item->name} ditambah {$validated['quantity']} {$item->unit}");
+                ->with('success', __('messages.stock_in_success', [
+                    'name' => $item->name,
+                    'qty' => $validated['quantity'],
+                    'unit' => $item->unit,
+                ]));
 
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->with('error', __('messages.stock_error', ['message' => $e->getMessage()]))
                 ->withInput();
         }
     }
@@ -115,10 +122,10 @@ class StockController extends Controller
             'reason' => 'required|string|max:255',
             'notes' => 'nullable|string|max:1000',
         ], [
-            'item_id.required' => 'Item harus dipilih.',
-            'quantity.required' => 'Jumlah harus diisi.',
-            'quantity.min' => 'Jumlah minimal 1.',
-            'reason.required' => 'Alasan stock out harus diisi.',
+            'item_id.required' => __('warehouse.validation.item_required'),
+            'quantity.required' => __('warehouse.validation.quantity_required'),
+            'quantity.min' => __('warehouse.validation.quantity_min'),
+            'reason.required' => __('warehouse.validation.reason_out_required'),
         ]);
 
         try {
@@ -130,7 +137,10 @@ class StockController extends Controller
             // Check if sufficient stock
             if ($item->current_stock < $validated['quantity']) {
                 return redirect()->back()
-                    ->with('error', "Stock tidak mencukupi! Stock tersedia: {$item->current_stock} {$item->unit}")
+                    ->with('error', __('messages.stock_out_insufficient', [
+                        'stock' => $item->current_stock,
+                        'unit' => $item->unit,
+                    ]))
                     ->withInput();
             }
 
@@ -152,13 +162,19 @@ class StockController extends Controller
 
             DB::commit();
 
+            AppNotifier::stockMovement('out', $user, $item, (int) $validated['quantity']);
+
             return redirect()->route('warehouse-staff.dashboard')
-                ->with('success', "Stock OUT berhasil! {$item->name} dikurangi {$validated['quantity']} {$item->unit}");
+                ->with('success', __('messages.stock_out_success', [
+                    'name' => $item->name,
+                    'qty' => $validated['quantity'],
+                    'unit' => $item->unit,
+                ]));
 
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->with('error', __('messages.stock_error', ['message' => $e->getMessage()]))
                 ->withInput();
         }
     }
@@ -190,9 +206,11 @@ class StockController extends Controller
         // Get filter options
         $items = Item::where('is_active', true)->orderBy('name')->get();
         $movementTypes = [
-            'IN' => 'Stock IN',
-            'OUT' => 'Stock OUT',
-           
+            'IN' => __('reports.movement.IN'),
+            'OUT' => __('reports.movement.OUT'),
+            'CHECKING_RESULT' => __('reports.movement.CHECKING_RESULT'),
+            'WI_CONSUMPTION' => __('reports.movement.WI_CONSUMPTION'),
+            'ADJUSTMENT' => __('reports.movement.ADJUSTMENT'),
         ];
 
         return view('warehouse-staff.stock-history', compact('movements', 'items', 'movementTypes'));

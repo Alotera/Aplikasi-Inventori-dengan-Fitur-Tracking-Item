@@ -55,7 +55,7 @@ class ItemLocationController extends Controller
         });
 
         return redirect()->route('admin.items.show', $item)
-            ->with('success', 'Location created successfully.');
+            ->with('success', __('messages.item_location.created'));
     }
 
     public function edit(Item $item, ItemLocation $location): View
@@ -102,7 +102,7 @@ class ItemLocationController extends Controller
         });
 
         return redirect()->route('admin.items.show', $item)
-            ->with('success', 'Location updated successfully.');
+            ->with('success', __('messages.item_location.updated'));
     }
 
     public function destroy(Item $item, ItemLocation $location): RedirectResponse
@@ -126,7 +126,7 @@ class ItemLocationController extends Controller
         });
 
         return redirect()->route('admin.items.show', $item)
-            ->with('success', 'Location deleted successfully.');
+            ->with('success', __('messages.item_location.deleted'));
     }
 
     public function transfer(Request $request, Item $item): RedirectResponse
@@ -168,7 +168,7 @@ class ItemLocationController extends Controller
         });
 
         return redirect()->route('admin.items.show', $item)
-            ->with('success', 'Quantity transferred successfully.');
+            ->with('success', __('messages.item_location.transfer_ok'));
     }
 }
 
