@@ -12,10 +12,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Requires at least one user in `users` (this seeder does not create or modify users).
         $this->call([
-            AdminUserSeeder::class,
-            ItemSeeder::class,
-            WorkInstructionTestSeeder::class,
+            DummyDataSeeder::class,
         ]);
     }
 }
